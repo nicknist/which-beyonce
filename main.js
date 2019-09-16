@@ -42,7 +42,7 @@ function playGameButton(event) {
 
   if (event.target.id === 'second-play-button') {
     instantiateDeck();
-    instantiateCards();
+    deck.shuffle();
     pageThreeSwitch();
   }
 
@@ -105,25 +105,21 @@ function pageThreeSwitch() {
     </div>`;
 }
 
-function pageCongratsSwitch(time) {
-  main.innerHTML = '';
-  main.innerHTML += `
-    <form class="second-page-form">
-      <h2>CONGRATULATIONS ${playerOneInput.value}</h2>
-
-      <p class="congrats-gif">It took you ${time} to complete the thing!</p>
-
-      <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
-
-    </form>`;
-}
-
-function instantiateCards() {
-  //do things and stuff
-  //go through 10 cards -> for each card it's going to give it a pic name, id 1-10, and start with other default stuff
-  for (var i = 0; i < deck.possibleCards.length; i++) {
-    var card = new Card(deck.possibleCards[i], deck.possiblePictures[i]);
-    deck.cards.push(card);
+function pageCongratsSwitch() {
+  if (deck.matches === 5) {
+    var finishTime = new Date();
+    var seconds = finishTime - deck.startTime;
+    seconds = Math.floor(seconds/1000);
+    var minutes = Math.floor(seconds/60);
+    seconds = seconds % 60;
+    var time = `${minutes} minutes and ${seconds} seconds`;
+    main.innerHTML = '';
+    main.innerHTML += `
+      <form class="second-page-form">
+        <h2>CONGRATULATIONS ${playerOneInput.value}</h2>
+        <p class="congrats-gif">It took you ${time} to complete the thing!</p>
+        <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
+        </form>`;
   }
 }
 
@@ -139,14 +135,10 @@ function changeGuessCard() {
   } else if (deck.cards[number-1].isFlipped) {
     flipCardToNumber(number);
   }
-  deck.checkSelectedCards();
-  if (deck.matches === 5) {
-    var finishTime = new Date();
-    var seconds = finishTime - deck.startTime;
-    seconds = Math.floor(seconds/1000);
-    // var minutes = (seconds % 3600);
-    var time = ` minutes and ${seconds} seconds`;
-    pageCongratsSwitch(time);
+  if (deck.selectedCards.length === 2) {
+    setTimeout(checkTheCards, 800);
+    setTimeout(flipTheCardsBack, 1500);
+    setTimeout(pageCongratsSwitch, 800);
   }
 }
 
@@ -154,13 +146,25 @@ function flipCardToPicture(number) {
   event.target.innerHTML = '';
   event.target.style.background = `url(${deck.cards[number - 1].picture}) no-repeat`;
   event.target.style.backgroundSize = 'cover';
+  event.target.classList.remove('flip-vertical-bck');
+  event.target.classList.add('flip-horizontal-bottom');
   deck.cards[number-1].flip();
   deck.flippedOver += 1;
 }
 
 function flipCardToNumber(number) {
+  event.target.classList.remove('flip-horizontal-bottom');
   event.target.innerHTML = `${deck.cards[number-1].cardNumber}`;
   event.target.style.background = 'none';
+  event.target.classList.add('flip-vertical-bck');
   deck.cards[number-1].flip();
   deck.flippedOver -= 1;
+}
+
+function checkTheCards() {
+  deck.checkSelectedCards();
+}
+
+function flipTheCardsBack() {
+  deck.flipCardsBack();
 }

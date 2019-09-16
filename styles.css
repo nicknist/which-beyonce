@@ -206,55 +206,55 @@ h2 {
 
 #card1 {
   grid-area: card1;
-  transform: rotate(-10deg);
+  /* transform: rotate(-10deg); */
 }
 
 #card2 {
   grid-area: card2;
-  transform: rotate(40deg);
+  /* transform: rotate(40deg); */
   margin-left: 57px;
   margin-top: 10px;
 }
 
 #card3 {
   grid-area: card3;
-  transform: rotate(10deg);
+  /* transform: rotate(10deg); */
   align-self: center;
 }
 
 #card4 {
   grid-area: card4;
-  transform: rotate(-10deg);
+  /* transform: rotate(-10deg); */
   margin-right: 10px;
 }
 
 #card5 {
   grid-area: card5;
   align-self: flex-end;
-  transform: rotate(-10deg);
+  /* transform: rotate(-10deg); */
 }
 
 #card6 {
   grid-area: card6;
-  transform: rotate(-15deg);
+  /* transform: rotate(-15deg); */
 }
 
 #card7 {
   grid-area: card7;
   align-self: flex-end;
-  transform: rotate(10deg);
+  /* transform: rotate(10deg); */
   margin-left: 10px;
 }
 
 #card8 {
   grid-area: card8;
   align-self: flex-end;
-  transform: rotate(-30deg);
+  /* transform: rotate(-30deg); */
 }
 
 #card9 {
   grid-area: card9;
-  transform: rotate(50deg);
+  /* transform: rotate(50deg); */
   margin-top: 5px;
   margin-left: 67px;
 }
@@ -262,9 +262,41 @@ h2 {
 #card10 {
   grid-area: card10;
   align-self: flex-end;
-  transform: rotate(45deg);
+  /* transform: rotate(45deg); */
 }
 
 .congrats-gif {
   justify-self: center;
+}
+
+.flip-horizontal-bottom {
+	 animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+
+.flip-vertical-bck {
+	 animation: flip-vertical-bck 0.4s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+
+@keyframes flip-horizontal-bottom {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(-180deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+@keyframes flip-vertical-bck {
+  0% {
+    transform: translateZ(0) rotateY(0);
+  }
+  50% {
+    transform: translateZ(-260px) rotateY(-180deg);
+  }
+  100% {
+    transform: translateZ(0) rotateY(0);
+  }
 }
