@@ -1,13 +1,13 @@
 class Deck {
-  constructor(playerOneName, playerTwoName) {
+  constructor(playerOne, playerTwo) {
     this.cards = [];
     this.matchedCards = [];
     this.selectedCards = [];
     this.startTime = new Date();
     this.matches = 0;
     this.flippedOver = 0;
-    this.playerOneName = playerOneName;
-    this.playerTwoName = playerTwoName;
+    this.playerOne = playerOne;
+    this.playerTwo = playerTwo;
     this.possiblePictures = []
   }
 

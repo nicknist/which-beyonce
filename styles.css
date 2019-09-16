@@ -11,9 +11,11 @@ body {
   font-family: 'Open Sans', sans-serif;
   height: 100vh;
   display: grid;
-  grid-template-areas: "header"
-                       "main";
+  grid-template-areas: "header header header"
+                       "left-side main right-side";
   grid-template-rows: 10fr 90fr;
+  grid-template-columns: 2fr 7fr 2fr;
+  grid-gap: 20px;
 }
 
 .background-image {
@@ -55,6 +57,7 @@ nav {
 h1 {
   background-color: white;
   display: flex;
+  font-size: 2.5em;
   justify-content: center;
   align-items: center;
   margin-right:
@@ -65,9 +68,17 @@ main {
   grid-area: main;
 }
 
+.third-page {
+  grid-column: 1 / span 3;
+  display: flex;
+  justify-content: space-around;
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
 .initial-page-form {
-  padding: 15%;
   height: 80vh;
+  padding-top: 10%;
   display: grid;
   grid-template-areas: "input1 input2"
                        "button  button";
@@ -77,8 +88,8 @@ main {
 }
 
 .second-page-form {
-  padding: 15%;
   height: 80vh;
+  padding-top: 10%;
   display: grid;
   grid-template-areas: "h2"
                        "p1"
@@ -91,21 +102,20 @@ main {
 .third-page-sections {
   height: 80vh;
   display: grid;
-  grid-template-areas: "section1 section2 section3";
-  grid-template-columns: 2fr 7fr 2fr;
-  padding: 15px;
+  grid-template-areas: "left-side main right-side";
+  padding-top: 10%;
 }
 
 #player-one-section {
-  grid-area: section1;
+  grid-area: left-side;
 }
 
 .card-section {
-  grid-area: section2;
+  grid-area: main;
 }
 
 #player-two-section {
-  grid-area: section3;
+  grid-area: right-side;
 }
 
 .player-section {
@@ -114,7 +124,25 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+  padding-top: 3%;
+}
+
+.leader-board {
+  grid-area: left-side;
+  background-color: black;
+  padding-top: 2%;
+  font-size: 1.2em;
+  justify-content: flex-start;
+  margin-left: 10px;
+}
+
+.leader-board-line {
+  margin: 20% 0%;
+}
+
+.leader-list-item {
+  margin-top: 40%;
 }
 
 .number-of-matches {
@@ -136,6 +164,7 @@ main {
   border: 2px solid white;
   width: 80%;
   border-radius: 10px;
+  margin: 30% 0%;
 }
 
 h2 {
@@ -189,6 +218,10 @@ h2 {
 
 #second-play-button {
   height: 35%;
+}
+
+#restart-game-button {
+  height: 72%;
 }
 
 .card-section {

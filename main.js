@@ -1,15 +1,19 @@
 var initialPlay = document.querySelector('#initialPlay');
 var main = document.querySelector('main');
 var body = document.querySelector('body');
+var header = document.querySelector('header');
 var playerOneInput = document.querySelector('#player-one-input');
 var playerTwoInput = document.querySelector('#player-two-input');
 var errorOneTooMany = document.getElementById('error-message-one-too-many');
 var errorOneBlank = document.getElementById('error-message-one-blank');
+var navBox = document.getElementById('three-line-box');
 var deck = null;
 
 main.addEventListener('click', mainClickOperators);
 
 main.addEventListener('keyup', typingOperators);
+
+navBox.addEventListener('click', headerOperators);
 
 //need main keyup function to enable buttons.... at some point
 
@@ -49,8 +53,64 @@ function playGameButton(event) {
   if (event.target.classList.contains('guess-card')) {
     changeGuessCard();
   }
+
+  if (event.target.id === 'restart-game-button') {
+    originalPageSwitch();
+  }
 }
 
+function headerOperators() {
+  console.log('click');
+  if (document.getElementById('leader-board') === null) {
+    body.insertAdjacentHTML('afterbegin', `
+      <section id="leader-board" class="leader-board player-section">
+      <h4 class="leader-board-title">LeaderBoard</h4>
+      <div class="player-section-line leader-board-line"></div>
+      <ol id="current-leaders">
+      </ol>
+      </section>`);
+    createLeaderPositions();
+  } else {
+    console.log('we in');
+    document.getElementById('leader-board').remove();
+  }
+}
+
+function createLeaderPositions() {
+  if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
+    var currentBoard = JSON.parse(localStorage.getItem("leaderBoard"));
+    var leaderList = document.getElementById('current-leaders');
+      for (var i = 0; i < currentBoard.length; i++) {
+        leaderList.innerHTML += `
+          <li class="leader-list-item">
+            <p>${currentBoard[i].name}</p>
+            <p>Time: ${currentBoard[i].time}</p>
+          </li>
+        `;
+      }
+  }
+}
+
+function originalPageSwitch() {
+  main.innerHTML = '';
+  body.classList.add('background-image');
+  main.innerHTML += `
+  <form class="initial-page-form">
+    <div class="player-input input1">
+      <input class="player-input" id="player-one-input" type="text" name="Player One Input" placeholder="Enter yo name">
+      <label for="Player One Input">Player One</label>
+      <p id="error-message-one-too-many" class="error-message">Error - Too Many Characters!</p>
+      <p id="error-message-one-blank" class="error-message">You haven't entered anything!</p>
+    </div>
+    <div class="player-input input2">
+      <input class="player-input" id="player-two-input" type="text" name="Player Two Input" placeholder="Enter yo name">
+      <label for="Player Two Input">Player Two</label>
+      <p id="error-message-two-too-many" class="error-message">Error - Too Many Characters!</p>
+      <p id="error-message-two-blank" class="error-message">You haven't entered anything!</p>
+    </div>
+    <button class="play-game-button" id="initial-play-button" type="button" name="button">Play Game</button>
+  </form>`;
+}
 
 function pageTwoSwitch() {
   main.innerHTML = '';
@@ -67,11 +127,13 @@ function pageTwoSwitch() {
 function pageThreeSwitch() {
   body.classList.add('background-gray');
   body.classList.remove('background-image');
+  localStorage.setItem("playerOneName", deck.playerOne.name);
+  localStorage.setItem("playerTwoName", deck.playerTwo.name);
   main.innerHTML = '';
+  main.classList.add('third-page');
   main.innerHTML += `
-    <div class="third-page-sections">
       <section id="player-one-section" class="player-section">
-      <h4>${deck.playerOneName}</h4>
+      <h4>${deck.playerOne.name}</h4>
       <div class="player-section-line"></div>
       <p>Matches This Round</p>
       <h1 class="number-of-matches" id="player-one-matches">${deck.matches}</h1>
@@ -93,7 +155,7 @@ function pageThreeSwitch() {
         <div class="guess-card" id="card${deck.cards[9].cardNumber}">${deck.cards[9].cardNumber}</div>
       </section>
       <section id="player-two-section" class="player-section">
-        <h4>${deck.playerOneName}</h4>
+        <h4>${deck.playerTwo.name}</h4>
         <div class="player-section-line"></div>
         <p>Matches This Round</p>
         <h1 class="number-of-matches" id="player-two-matches">?</h1>
@@ -101,8 +163,7 @@ function pageThreeSwitch() {
         <ul class="game-wins">
           Game Wins
         </ul>
-      </section>
-    </div>`;
+      </section>`;
 }
 
 function pageCongratsSwitch() {
@@ -113,18 +174,24 @@ function pageCongratsSwitch() {
     var minutes = Math.floor(seconds/60);
     seconds = seconds % 60;
     var time = `${minutes} minutes and ${seconds} seconds`;
+    makeLeaderBoard(seconds);
     main.innerHTML = '';
+    main.classList.remove('third-page');
     main.innerHTML += `
       <form class="second-page-form">
         <h2>CONGRATULATIONS ${playerOneInput.value}</h2>
         <p class="congrats-gif">It took you ${time} to complete the thing!</p>
         <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
-        </form>`;
+        <button type="button" name="button" class="play-game-button" id="restart-game-button">New Game</button>
+      </form>`;
   }
 }
 
 function instantiateDeck() {
-  deck = new Deck(playerOneInput.value, playerTwoInput.value);
+  var playerOne = new Player(playerOneInput.value);
+  var playerTwo = new Player(playerTwoInput.value);
+  //add a search method later to figure out if the player has any 'matches' or games played
+  deck = new Deck(playerOne, playerTwo);
 }
 
 function changeGuessCard() {
@@ -167,4 +234,24 @@ function checkTheCards() {
 
 function flipTheCardsBack() {
   deck.flipCardsBack();
+}
+
+function makeLeaderBoard(time) {
+  var blankBoard = [];
+  if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
+    var oldBoard = JSON.parse(localStorage.getItem("leaderBoard"));
+    blankBoard = blankBoard.concat(oldBoard);
+  }
+  var newLeader = {name: deck.playerOne.name, time: time};
+  blankBoard.push(newLeader);
+  blankBoard = blankBoard.sort(compareTime);
+  if (blankBoard.length > 5) {
+    blankBoard.pop();
+  }
+  var stringifiedBoard = JSON.stringify(blankBoard);
+  localStorage.setItem("leaderBoard", stringifiedBoard);
+}
+
+function compareTime(a, b) {
+  return a.time - b.time;
 }
