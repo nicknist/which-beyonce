@@ -49,8 +49,6 @@ class Deck {
     this.chooseCurrentMatchCount();
     this.selectedCards[0].match();
     this.selectedCards[1].match();
-    // document.getElementById(`card${this.selectedCards[0].cardNumber}`).classList.add();
-    // document.getElementById(`card${this.selectedCards[1].cardNumber}`).classList.add();
     document.getElementById(`card${this.selectedCards[0].cardNumber}`).remove();
     document.getElementById(`card${this.selectedCards[1].cardNumber}`).remove();
     this.matchedCards = this.selectedCards;

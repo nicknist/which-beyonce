@@ -1,4 +1,3 @@
-var initialPlay = document.querySelector('#initialPlay');
 var main = document.querySelector('main');
 var body = document.querySelector('body');
 var header = document.querySelector('header');
@@ -10,16 +9,14 @@ var errorTwoTooMany = document.getElementById('error-message-two-too-many');
 var errorTwoBlank = document.getElementById('error-message-two-blank');
 var navBox = document.getElementById('three-line-box');
 var pauseButton = document.getElementById('pause-button');
+
 var deck = null;
 var paused = false;
 var startPause = null;
 
 main.addEventListener('click', mainClickOperators);
-
 main.addEventListener('keyup', typingOperators);
-
 navBox.addEventListener('click', headerOperators);
-
 pauseButton.addEventListener('click', pauseEverything);
 
 function mainClickOperators(event) {
@@ -37,53 +34,15 @@ function typingOperators() {
   errorMessages(document.querySelector('#player-two-input'), errorTwoBlank, errorTwoTooMany);
 }
 
-function errorMessages(player, errorBlank, errorTooMany) {
-  if (player.value.length < 33 && player.value !== '') {
-    errorBlank.classList.remove('display-show');
-    errorTooMany.classList.remove('display-show');
-    player.classList.remove('error-box');
-    document.getElementById('initial-play-button').disabled = false;
-  } else if(player.value === '') {
-    errorBlank.classList.add('display-show');
-    player.classList.add('error-box');
-    document.getElementById('initial-play-button').disabled = true;
-  } else if (player.value.length > 32){
-    errorTooMany.classList.add('display-show');
-    player.classList.add('error-box');
-    document.getElementById('initial-play-button').disabled = true;
-  }
-}
-
-
-function playGameButton(event) {
-  if (event.target.id === 'initial-play-button' && playerOneInput.value.length < 33 && playerOneInput.value !== '' && playerTwoInput.value.length < 33 && playerTwoInput.value !== '') {
-    pageTwoSwitch();
-  } else if (playerOneInput.value.length > 33 || playerOneInput.value === '' || playerTwoInput.value.length > 33 || playerTwoInput.value === '') {
-    errorMessages(playerOneInput, errorOneBlank, errorOneTooMany);
-    errorMessages(playerTwoInput, errorTwoBlank, errorTwoTooMany);
-  }
-  if (event.target.id === 'second-play-button' || event.target.id === 'restart-game-button-same-names') {
-    instantiateDeck();
-    deck.shuffle();
-    pageThreeSwitch();
-  }
-  if (event.target.classList.contains('guess-card')) {
-    changeGuessCard();
-  }
-  if (event.target.id === 'restart-game-button') {
-    originalPageSwitch();
-  }
-}
-
 function headerOperators() {
   if (document.getElementById('leader-board') === null) {
     body.insertAdjacentHTML('afterbegin', `
-      <section id="leader-board" class="leader-board player-section">
-      <h4 class="leader-board-title">LeaderBoard</h4>
-      <div class="player-section-line leader-board-line"></div>
-      <ol id="current-leaders">
-      </ol>
-      </section>`);
+    <section id="leader-board" class="leader-board player-section">
+    <h4 class="leader-board-title">LeaderBoard</h4>
+    <div class="player-section-line leader-board-line"></div>
+    <ol id="current-leaders">
+    </ol>
+    </section>`);
     createLeaderPositions();
   } else {
     document.getElementById('leader-board').remove();
@@ -95,31 +54,80 @@ function pauseEverything() {
     paused = true;
     startPause = Date.now();
     main.insertAdjacentHTML('afterbegin', `
-      <div id="pause-message">
-        You are paused! Click the P in the top right to resume.
-      </div>`);
-      main.removeEventListener('click', mainClickOperators);
-      main.removeEventListener('keyup', typingOperators);
-      navBox.removeEventListener('click', headerOperators);
+    <div id="pause-message">
+    You are paused! Click the P in the top right to resume.
+    </div>`);
+    main.removeEventListener('click', mainClickOperators);
+    main.removeEventListener('keyup', typingOperators);
+    navBox.removeEventListener('click', headerOperators);
   } else if (paused === true) {
-    paused = false;
-    var finishPause = Date.now();
-    main.addEventListener('click', mainClickOperators);
-    main.addEventListener('keyup', typingOperators);
-    navBox.addEventListener('click', headerOperators);
-    document.getElementById('pause-message').remove();
-    if (deck !== null) {
-      deck.startTime = deck.startTime + (finishPause - startPause);
-      console.log(deck.startTime);
-    }
+    unPauseEverything();
   }
+}
+
+function unPauseEverything() {
+  paused = false;
+  var finishPause = Date.now();
+  main.addEventListener('click', mainClickOperators);
+  main.addEventListener('keyup', typingOperators);
+  navBox.addEventListener('click', headerOperators);
+  document.getElementById('pause-message').remove();
+  if (deck !== null) {
+    deck.startTime = deck.startTime + (finishPause - startPause);
+    console.log(deck.startTime);
+  }
+}
+
+function playGameButton(event) {
+  if (event.target.id === 'initial-play-button' && playerOneInput.value.length < 33 && playerOneInput.value !== '' && playerTwoInput.value.length < 33 && playerTwoInput.value !== '') {
+    pageTwoSwitch();
+  } else if (playerOneInput.value.length > 33 || playerOneInput.value === '' || playerTwoInput.value.length > 33 || playerTwoInput.value === '') {
+    errorMessages(playerOneInput, errorOneBlank, errorOneTooMany);
+    errorMessages(playerTwoInput, errorTwoBlank, errorTwoTooMany);
+  }
+  if (event.target.id === 'second-play-button' || event.target.id === 'restart-game-button-same-names') {
+    gamePlayPageThree();
+  }
+  if (event.target.classList.contains('guess-card')) {
+    changeGuessCard();
+  }
+  if (event.target.id === 'restart-game-button') {
+    originalPageSwitch();
+  }
+}
+
+function errorMessages(player, errorBlank, errorTooMany) {
+  if (player.value.length < 33 && player.value !== '') {
+    enablePlayButton(player, errorBlank, errorTooMany);
+  } else if(player.value === '') {
+    errorBlank.classList.add('display-show');
+    player.classList.add('error-box');
+    document.getElementById('initial-play-button').disabled = true;
+  } else if (player.value.length > 32){
+    errorTooMany.classList.add('display-show');
+    player.classList.add('error-box');
+    document.getElementById('initial-play-button').disabled = true;
+  }
+}
+
+function enablePlayButton(player, errorBlank, errorTooMany) {
+  errorBlank.classList.remove('display-show');
+  errorTooMany.classList.remove('display-show');
+  player.classList.remove('error-box');
+  document.getElementById('initial-play-button').disabled = false;
+}
+
+function gamePlayPageThree() {
+  instantiateDeck();
+  deck.shuffle();
+  pageThreeSwitch();
 }
 
 function createLeaderPositions() {
   if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
     var currentBoard = JSON.parse(localStorage.getItem("leaderBoard"));
     var leaderList = document.getElementById('current-leaders');
-      for (var i = 0; i < currentBoard.length; i++) {
+      for (var i = 0; i < 5; i++) {
         leaderList.innerHTML += `
           <li class="leader-list-item">
             <p>${currentBoard[i].name}</p>
@@ -176,12 +184,12 @@ function pageThreeSwitch() {
       <section id="player-one-section" class="player-section">
       <h4 id="player-one-area" class="green-background">${deck.playerOne.name}<br /><p id="spot-to-insert">IT'S YOUR TURN!</p></h4>
       <div class="player-section-line"></div>
-      <p>Matches This Round</p>
+      <p>Matches <br /> This Round</p>
       <h1 class="number-of-matches" id="player-one-matches">${deck.playerOne.matchCount}</h1>
       <div class="player-section-line"></div>
-      <ul class="game-wins">
+      <ol class="game-wins" id="player-one-wins">
         Game Wins
-      </ul>
+      </ol>
       </section>
       <section class="card-section">
         <div class="guess-card" id="card${deck.cards[0].cardNumber}">${deck.cards[0].cardNumber}</div>
@@ -198,32 +206,27 @@ function pageThreeSwitch() {
       <section id="player-two-section" class="player-section">
         <h4 id="player-two-area">${deck.playerTwo.name}<br /><p id="p1-turn"></p></h4>
         <div class="player-section-line"></div>
-        <p>Matches This Round</p>
+        <p>Matches <br /> This Round</p>
         <h1 class="number-of-matches" id="player-two-matches">${deck.playerTwo.matchCount}</h1>
         <div class="player-section-line"></div>
-        <ul class="game-wins">
+        <ol class="game-wins" id="player-two-wins">
           Game Wins
-        </ul>
+        </ol>
       </section>`;
     checkPastWinner();
+    makePastGameWins(deck.playerOne.name, document.getElementById('player-one-wins'));
+    makePastGameWins(deck.playerTwo.name, document.getElementById('player-two-wins'));
 }
 
 function pageCongratsSwitch() {
   if (deck.currentGameMatches === 5) {
-    var finishTime = Date.now();
-    var seconds = finishTime - deck.startTime;
-    seconds = Math.floor(seconds/1000);
-    var minutes = Math.floor(seconds/60);
-    seconds = seconds % 60;
-    var time = `${minutes} minutes and ${seconds} seconds`;
-    deck.findWinner();
-    makeLeaderBoard(seconds);
+    calculateGameTime();
     main.innerHTML = '';
     main.classList.remove('third-page');
     main.innerHTML += `
       <form class="second-page-form">
         <h2>CONGRATULATIONS ${deck.winner.name}</h2>
-        <p class="congrats-gif">It took you ${time} to complete the thing!</p>
+        <p class="congrats-gif">It took you ${calculateGameTime()} to complete the thing!</p>
         <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
         <div class="replay-buttons">
           <button type="button" name="button" class="play-game-button" id="restart-game-button">New Game</button>
@@ -231,6 +234,18 @@ function pageCongratsSwitch() {
         </div>
       </form>`;
   }
+}
+
+function calculateGameTime() {
+  var finishTime = Date.now();
+  var seconds = finishTime - deck.startTime;
+  seconds = Math.floor(seconds/1000);
+  var minutes = Math.floor(seconds/60);
+  seconds = seconds % 60;
+  var time = `${minutes} minutes and ${seconds} seconds`;
+  deck.findWinner();
+  makeLeaderBoard(seconds);
+  return time;
 }
 
 function instantiateDeck() {
@@ -253,16 +268,6 @@ function changeGuessCard() {
   }
 }
 
-function flipCardToPicture(number) {
-  event.target.innerHTML = '';
-  event.target.style.background = `url(${deck.cards[number - 1].picture}) no-repeat`;
-  event.target.style.backgroundSize = 'cover';
-  event.target.classList.remove('flip-vertical-bck');
-  event.target.classList.add('flip-horizontal-bottom');
-  deck.cards[number-1].flip();
-  deck.flippedOver += 1;
-}
-
 function checkTheCards() {
   deck.checkSelectedCards();
 }
@@ -277,6 +282,16 @@ function switchTheTurns() {
   }
 }
 
+function flipCardToPicture(number) {
+  event.target.innerHTML = '';
+  event.target.style.background = `url(${deck.cards[number - 1].picture}) no-repeat`;
+  event.target.style.backgroundSize = 'cover';
+  event.target.classList.remove('flip-vertical-bck');
+  event.target.classList.add('flip-horizontal-bottom');
+  deck.cards[number-1].flip();
+  deck.flippedOver += 1;
+}
+
 function makeLeaderBoard(time) {
   var blankBoard = [];
   if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
@@ -286,9 +301,6 @@ function makeLeaderBoard(time) {
   var newLeader = {name: deck.winner.name, time: time};
   blankBoard.push(newLeader);
   blankBoard = blankBoard.sort(compareTime);
-  if (blankBoard.length > 5) {
-    blankBoard.pop();
-  }
   var stringifiedBoard = JSON.stringify(blankBoard);
   localStorage.setItem("leaderBoard", stringifiedBoard);
 }
@@ -300,13 +312,27 @@ function compareTime(a, b) {
 function checkPastWinner() {
   if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
     var oldBoard = JSON.parse(localStorage.getItem("leaderBoard"));
-    for (var i = 0; i < oldBoard.length; i++) {
+    for (var i = 0; i < 5; i++) {
       if (oldBoard[i].name === deck.playerOne.name) {
         document.getElementById('spot-to-insert').insertAdjacentHTML('beforebegin', `
           <img src="images/trophy.jpeg" alt="Trophy for being on the leaderboard!" class="small-trophy">`);
       } else if (oldBoard[i].name === deck.playerTwo.name) {
         document.getElementById('player-two-area').insertAdjacentHTML('beforeend', `
           <img src="images/trophy.jpeg" alt="Trophy for being on the leaderboard!" class="small-trophy">`);
+      }
+    }
+  }
+}
+
+function makePastGameWins(playerName, idName) {
+  if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
+    var oldBoard = JSON.parse(localStorage.getItem("leaderBoard"));
+    for (var i = 0; i < oldBoard.length; i++) {
+      if (oldBoard[i].name === playerName) {
+        idName.innerHTML += `
+        <li>
+          Round won in ${oldBoard[i].time} seconds
+        </li>`;
       }
     }
   }
