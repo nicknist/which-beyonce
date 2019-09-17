@@ -14,7 +14,7 @@ class Deck {
   }
 
   shuffle() {
-    this.possiblePictures = ['images/bay-of-islands.jpeg', 'images/cable-bay.jpeg', 'images/kaiteri.jpeg', 'images/kayak.jpeg', 'images/mt-arthur.jpeg', 'images/bay-of-islands.jpeg', 'images/cable-bay.jpeg', 'images/kaiteri.jpeg', 'images/kayak.jpeg', 'images/mt-arthur.jpeg']
+    this.getFiveRandomPairs();
     var counter = 10;
     for (var i = 0; i < 10; i++) {
       var randomNumber = Math.floor(Math.random() * Math.floor(counter));
@@ -23,6 +23,20 @@ class Deck {
       this.possiblePictures.splice(randomNumber, 1);
       counter--;
     }
+  }
+
+  getFiveRandomPairs() {
+    this.possiblePictures = ['images/bay-of-islands.jpeg', 'images/cable-bay.jpeg', 'images/kaiteri.jpeg', 'images/kayak.jpeg', 'images/mt-arthur.jpeg', 'images/ellie-kayak.jpeg', 'images/nelson-bay.jpeg', 'images/nelson.jpeg', 'images/queenstown.jpeg', 'images/whareki.jpeg'];
+    var finalFiveArray = [];
+    var counter = 10;
+    for (var i = 0; i < 5; i++) {
+      var randomNumber = Math.floor(Math.random() * Math.floor(counter));
+      finalFiveArray.push(this.possiblePictures[randomNumber]);
+      finalFiveArray.push(this.possiblePictures[randomNumber]);
+      this.possiblePictures.splice(randomNumber, 1);
+      counter--;
+    }
+    this.possiblePictures = finalFiveArray;
   }
 
   checkSelectedCards() {
@@ -44,11 +58,11 @@ class Deck {
 
   chooseCurrentMatchCount() {
     if (this.currentTurn === this.playerOne) {
-      this.playerOne.matchCount += 1;
+      this.playerOne.findMatch();
       this.currentGameMatches += 1;
       document.getElementById('player-one-matches').innerHTML = this.playerOne.matchCount;
     } else {
-      this.playerTwo.matchCount += 1;
+      this.playerTwo.findMatch();
       this.currentGameMatches += 1;
       document.getElementById('player-two-matches').innerHTML = this.playerTwo.matchCount;
     }
@@ -77,18 +91,20 @@ class Deck {
     var p2area = document.getElementById('player-two-area');
     if (this.currentTurn === this.playerTwo) {
       this.currentTurn = this.playerOne;
-      p2area.innerHTML = this.playerTwo.name;
+      // p2area.innerHTML = this.playerTwo.name;
+      document.getElementById('p1-turn').remove();
       p2area.classList.remove('green-background');
       p1area.classList.add('green-background');
       p1area.insertAdjacentHTML('beforeend', `
-      <p>IT'S YOUR TURN!</p>`);
+      <p id="spot-to-insert">IT'S YOUR TURN!</p>`);
     } else {
       this.currentTurn = this.playerTwo;
-      p1area.innerHTML = this.playerOne.name;
+      // p1area.innerHTML = this.playerOne.name;
+      document.getElementById('spot-to-insert').remove();
       p1area.classList.remove('green-background');
       p2area.classList.add('green-background');
       p2area.insertAdjacentHTML('beforeend', `
-      <p>IT'S YOUR TURN!</p>`);
+      <p id="p1-turn">IT'S YOUR TURN!</p>`);
     }
   }
 

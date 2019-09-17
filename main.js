@@ -36,7 +36,7 @@ function typingOperators() {
 }
 
 function playGameButton(event) {
-  if (event.target.classList.contains('play-game-button') && playerOneInput.value.length < 33 && playerOneInput.value != '') {
+  if (event.target.id === 'initial-play-button' && playerOneInput.value.length < 33 && playerOneInput.value != '') {
     pageTwoSwitch();
   } else if (playerOneInput.value === '') {
     errorOneTooMany.classList.remove('display-show');
@@ -44,7 +44,7 @@ function playGameButton(event) {
     playerOneInput.classList.add('error-box');
   }
 
-  if (event.target.id === 'second-play-button') {
+  if (event.target.id === 'second-play-button' || event.target.id === 'restart-game-button-same-names') {
     instantiateDeck();
     deck.shuffle();
     pageThreeSwitch();
@@ -133,7 +133,7 @@ function pageThreeSwitch() {
   main.classList.add('third-page');
   main.innerHTML += `
       <section id="player-one-section" class="player-section">
-      <h4 id="player-one-area" class="green-background">${deck.playerOne.name}<p>IT'S YOUR TURN!</p></h4>
+      <h4 id="player-one-area" class="green-background">${deck.playerOne.name}<br /><p id="spot-to-insert">IT'S YOUR TURN!</p></h4>
       <div class="player-section-line"></div>
       <p>Matches This Round</p>
       <h1 class="number-of-matches" id="player-one-matches">${deck.playerOne.matchCount}</h1>
@@ -155,7 +155,7 @@ function pageThreeSwitch() {
         <div class="guess-card" id="card${deck.cards[9].cardNumber}">${deck.cards[9].cardNumber}</div>
       </section>
       <section id="player-two-section" class="player-section">
-        <h4 id="player-two-area">${deck.playerTwo.name}</h4>
+        <h4 id="player-two-area">${deck.playerTwo.name}<br /><p id="p1-turn"></p></h4>
         <div class="player-section-line"></div>
         <p>Matches This Round</p>
         <h1 class="number-of-matches" id="player-two-matches">${deck.playerTwo.matchCount}</h1>
@@ -164,6 +164,7 @@ function pageThreeSwitch() {
           Game Wins
         </ul>
       </section>`;
+    checkPastWinner();
 }
 
 function pageCongratsSwitch() {
@@ -183,7 +184,10 @@ function pageCongratsSwitch() {
         <h2>CONGRATULATIONS ${deck.winner.name}</h2>
         <p class="congrats-gif">It took you ${time} to complete the thing!</p>
         <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
-        <button type="button" name="button" class="play-game-button" id="restart-game-button">New Game</button>
+        <div class="replay-buttons">
+          <button type="button" name="button" class="play-game-button" id="restart-game-button">New Game</button>
+          <button type="button" name="button" class="play-game-button" id="restart-game-button-same-names">Play Again with Same Names</button>
+        </div>
       </form>`;
   }
 }
@@ -191,7 +195,6 @@ function pageCongratsSwitch() {
 function instantiateDeck() {
   var playerOne = new Player(playerOneInput.value);
   var playerTwo = new Player(playerTwoInput.value);
-  //add a search method later to figure out if the player has any 'matches' or games played
   deck = new Deck(playerOne, playerTwo);
 }
 
@@ -251,4 +254,19 @@ function makeLeaderBoard(time) {
 
 function compareTime(a, b) {
   return a.time - b.time;
+}
+
+function checkPastWinner() {
+  if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
+    var oldBoard = JSON.parse(localStorage.getItem("leaderBoard"));
+    for (var i = 0; i < oldBoard.length; i++) {
+      if (oldBoard[i].name === deck.playerOne.name) {
+        document.getElementById('spot-to-insert').insertAdjacentHTML('beforebegin', `
+          <img src="images/trophy.jpeg" alt="Trophy for being on the leaderboard!" class="small-trophy">`);
+      } else if (oldBoard[i].name === deck.playerTwo.name) {
+        document.getElementById('player-two-area').insertAdjacentHTML('beforeend', `
+          <img src="images/trophy.jpeg" alt="Trophy for being on the leaderboard!" class="small-trophy">`);
+      }
+    }
+  }
 }

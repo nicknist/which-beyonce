@@ -225,8 +225,18 @@ h2 {
   height: 35%;
 }
 
+.replay-buttons {
+  display: flex;
+}
+
 #restart-game-button {
   height: 72%;
+  margin-right: 10px;
+}
+
+#restart-game-button-same-names {
+  height: 72%;
+  margin-left: 10px;
 }
 
 .card-section {
@@ -305,6 +315,11 @@ h2 {
 
 .congrats-gif {
   justify-self: center;
+}
+
+.small-trophy {
+  height: 20px;
+  width: 23px;
 }
 
 .flip-horizontal-bottom {
