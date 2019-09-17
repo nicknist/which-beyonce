@@ -6,8 +6,13 @@ var playerOneInput = document.querySelector('#player-one-input');
 var playerTwoInput = document.querySelector('#player-two-input');
 var errorOneTooMany = document.getElementById('error-message-one-too-many');
 var errorOneBlank = document.getElementById('error-message-one-blank');
+var errorTwoTooMany = document.getElementById('error-message-two-too-many');
+var errorTwoBlank = document.getElementById('error-message-two-blank');
 var navBox = document.getElementById('three-line-box');
+var pauseButton = document.getElementById('pause-button');
 var deck = null;
+var paused = false;
+var startPause = null;
 
 main.addEventListener('click', mainClickOperators);
 
@@ -15,52 +20,62 @@ main.addEventListener('keyup', typingOperators);
 
 navBox.addEventListener('click', headerOperators);
 
-//need main keyup function to enable buttons.... at some point
+pauseButton.addEventListener('click', pauseEverything);
 
 function mainClickOperators(event) {
   playGameButton(event);
 }
 
 function typingOperators() {
-  if (playerOneInput.value.length < 33) {
-    errorOneBlank.classList.remove('display-show');
-    errorOneTooMany.classList.remove('display-show');
-    playerOneInput.classList.remove('error-box');
-  } else if(playerOneInput.value === '') {
-    errorOneBlank.classList.remove('display-show');
-    playerOneInput.classList.remove('error-box');
-  } else if (playerOneInput.value.length > 32){
-    errorOneTooMany.classList.add('display-show');
-    playerOneInput.classList.add('error-box');
+  var errorOneTooMany = document.getElementById('error-message-one-too-many');
+  var errorOneBlank = document.getElementById('error-message-one-blank');
+  var errorTwoTooMany = document.getElementById('error-message-two-too-many');
+  var errorTwoBlank = document.getElementById('error-message-two-blank');
+  playerOneInput = document.querySelector('#player-one-input');
+  playerTwoInput = document.querySelector('#player-two-input');
+  errorMessages(document.querySelector('#player-one-input'), errorOneBlank, errorOneTooMany);
+  errorMessages(document.querySelector('#player-two-input'), errorTwoBlank, errorTwoTooMany);
+}
+
+function errorMessages(player, errorBlank, errorTooMany) {
+  if (player.value.length < 33 && player.value !== '') {
+    errorBlank.classList.remove('display-show');
+    errorTooMany.classList.remove('display-show');
+    player.classList.remove('error-box');
+    document.getElementById('initial-play-button').disabled = false;
+  } else if(player.value === '') {
+    errorBlank.classList.add('display-show');
+    player.classList.add('error-box');
+    document.getElementById('initial-play-button').disabled = true;
+  } else if (player.value.length > 32){
+    errorTooMany.classList.add('display-show');
+    player.classList.add('error-box');
+    document.getElementById('initial-play-button').disabled = true;
   }
 }
 
-function playGameButton(event) {
-  if (event.target.id === 'initial-play-button' && playerOneInput.value.length < 33 && playerOneInput.value != '') {
-    pageTwoSwitch();
-  } else if (playerOneInput.value === '') {
-    errorOneTooMany.classList.remove('display-show');
-    errorOneBlank.classList.add('display-show');
-    playerOneInput.classList.add('error-box');
-  }
 
+function playGameButton(event) {
+  if (event.target.id === 'initial-play-button' && playerOneInput.value.length < 33 && playerOneInput.value !== '' && playerTwoInput.value.length < 33 && playerTwoInput.value !== '') {
+    pageTwoSwitch();
+  } else if (playerOneInput.value.length > 33 || playerOneInput.value === '' || playerTwoInput.value.length > 33 || playerTwoInput.value === '') {
+    errorMessages(playerOneInput, errorOneBlank, errorOneTooMany);
+    errorMessages(playerTwoInput, errorTwoBlank, errorTwoTooMany);
+  }
   if (event.target.id === 'second-play-button' || event.target.id === 'restart-game-button-same-names') {
     instantiateDeck();
     deck.shuffle();
     pageThreeSwitch();
   }
-
   if (event.target.classList.contains('guess-card')) {
     changeGuessCard();
   }
-
   if (event.target.id === 'restart-game-button') {
     originalPageSwitch();
   }
 }
 
 function headerOperators() {
-  console.log('click');
   if (document.getElementById('leader-board') === null) {
     body.insertAdjacentHTML('afterbegin', `
       <section id="leader-board" class="leader-board player-section">
@@ -71,8 +86,32 @@ function headerOperators() {
       </section>`);
     createLeaderPositions();
   } else {
-    console.log('we in');
     document.getElementById('leader-board').remove();
+  }
+}
+
+function pauseEverything() {
+  if (paused === false) {
+    paused = true;
+    startPause = Date.now();
+    main.insertAdjacentHTML('afterbegin', `
+      <div id="pause-message">
+        You are paused! Click the P in the top right to resume.
+      </div>`);
+      main.removeEventListener('click', mainClickOperators);
+      main.removeEventListener('keyup', typingOperators);
+      navBox.removeEventListener('click', headerOperators);
+  } else if (paused === true) {
+    paused = false;
+    var finishPause = Date.now();
+    main.addEventListener('click', mainClickOperators);
+    main.addEventListener('keyup', typingOperators);
+    navBox.addEventListener('click', headerOperators);
+    document.getElementById('pause-message').remove();
+    if (deck !== null) {
+      deck.startTime = deck.startTime + (finishPause - startPause);
+      console.log(deck.startTime);
+    }
   }
 }
 
@@ -93,6 +132,8 @@ function createLeaderPositions() {
 
 function originalPageSwitch() {
   main.innerHTML = '';
+  playerOneInput.value = null;
+  playerTwoInput.value = null;
   body.classList.add('background-image');
   main.innerHTML += `
   <form class="initial-page-form">
@@ -169,7 +210,7 @@ function pageThreeSwitch() {
 
 function pageCongratsSwitch() {
   if (deck.currentGameMatches === 5) {
-    var finishTime = new Date();
+    var finishTime = Date.now();
     var seconds = finishTime - deck.startTime;
     seconds = Math.floor(seconds/1000);
     var minutes = Math.floor(seconds/60);

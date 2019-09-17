@@ -4,7 +4,7 @@ class Deck {
     this.matchedCards = [];
     this.selectedCards = [];
     this.currentGameMatches = 0;
-    this.startTime = new Date();
+    this.startTime = Date.now();
     this.flippedOver = 0;
     this.playerOne = playerOne;
     this.playerTwo = playerTwo;
@@ -49,6 +49,8 @@ class Deck {
     this.chooseCurrentMatchCount();
     this.selectedCards[0].match();
     this.selectedCards[1].match();
+    // document.getElementById(`card${this.selectedCards[0].cardNumber}`).classList.add();
+    // document.getElementById(`card${this.selectedCards[1].cardNumber}`).classList.add();
     document.getElementById(`card${this.selectedCards[0].cardNumber}`).remove();
     document.getElementById(`card${this.selectedCards[1].cardNumber}`).remove();
     this.matchedCards = this.selectedCards;
@@ -91,7 +93,9 @@ class Deck {
     var p2area = document.getElementById('player-two-area');
     if (this.currentTurn === this.playerTwo) {
       this.currentTurn = this.playerOne;
-      // p2area.innerHTML = this.playerTwo.name;
+      if (document.querySelectorAll('#p1-turn').length === 2) {
+        document.getElementById('p1-turn').remove();
+    }
       document.getElementById('p1-turn').remove();
       p2area.classList.remove('green-background');
       p1area.classList.add('green-background');
@@ -99,7 +103,6 @@ class Deck {
       <p id="spot-to-insert">IT'S YOUR TURN!</p>`);
     } else {
       this.currentTurn = this.playerTwo;
-      // p1area.innerHTML = this.playerOne.name;
       document.getElementById('spot-to-insert').remove();
       p1area.classList.remove('green-background');
       p2area.classList.add('green-background');

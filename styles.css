@@ -34,8 +34,25 @@ header {
   grid-template-columns: 8fr 84fr 8fr;
 }
 
-.title2 {
-  background-color: white;
+.title-2 {
+  background-color: black;
+  color: white;
+  display: flex;
+  font-size: 3em;
+  justify-content: center;
+  align-items: center;
+}
+
+#pause-message{
+  position: absolute;
+  height: 50%;
+  width: 50%;
+  text-align: center;
+  z-index: 200000;
+  padding: 53px;
+  font-size: 3em;
+  background-color: black;
+  color: white;
 }
 
 nav {
@@ -221,6 +238,10 @@ h2 {
   border: none;
 }
 
+.play-game-button:disabled {
+  background-color: gray;
+}
+
 #second-play-button {
   height: 35%;
 }
@@ -254,63 +275,47 @@ h2 {
 
 #card1 {
   grid-area: card1;
-  /* transform: rotate(-10deg); */
 }
 
 #card2 {
   grid-area: card2;
-  /* transform: rotate(40deg); */
-  margin-left: 57px;
-  margin-top: 10px;
 }
 
 #card3 {
   grid-area: card3;
-  /* transform: rotate(10deg); */
   align-self: center;
 }
 
 #card4 {
   grid-area: card4;
-  /* transform: rotate(-10deg); */
-  margin-right: 10px;
 }
 
 #card5 {
   grid-area: card5;
   align-self: flex-end;
-  /* transform: rotate(-10deg); */
 }
 
 #card6 {
   grid-area: card6;
-  /* transform: rotate(-15deg); */
 }
 
 #card7 {
   grid-area: card7;
   align-self: flex-end;
-  /* transform: rotate(10deg); */
-  margin-left: 10px;
 }
 
 #card8 {
   grid-area: card8;
   align-self: flex-end;
-  /* transform: rotate(-30deg); */
 }
 
 #card9 {
   grid-area: card9;
-  /* transform: rotate(50deg); */
-  margin-top: 5px;
-  margin-left: 67px;
 }
 
 #card10 {
   grid-area: card10;
   align-self: flex-end;
-  /* transform: rotate(45deg); */
 }
 
 .congrats-gif {
