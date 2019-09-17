@@ -167,6 +167,11 @@ main {
   margin: 30% 0%;
 }
 
+.green-background {
+  background-color: green;
+  text-align: center;
+}
+
 h2 {
   justify-self: center;
 }

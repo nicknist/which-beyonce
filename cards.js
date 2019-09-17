@@ -12,7 +12,7 @@ class Card {
       deck.selectedCards.push(this);
     } else {
       this.isFlipped = false;
-      deck.selectedCards.splice(      deck.selectedCards.indexOf(this), 1);
+      deck.selectedCards.splice(deck.selectedCards.indexOf(this), 1);
     }
   }
 

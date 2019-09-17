@@ -133,10 +133,10 @@ function pageThreeSwitch() {
   main.classList.add('third-page');
   main.innerHTML += `
       <section id="player-one-section" class="player-section">
-      <h4>${deck.playerOne.name}</h4>
+      <h4 id="player-one-area" class="green-background">${deck.playerOne.name}<p>IT'S YOUR TURN!</p></h4>
       <div class="player-section-line"></div>
       <p>Matches This Round</p>
-      <h1 class="number-of-matches" id="player-one-matches">${deck.matches}</h1>
+      <h1 class="number-of-matches" id="player-one-matches">${deck.playerOne.matchCount}</h1>
       <div class="player-section-line"></div>
       <ul class="game-wins">
         Game Wins
@@ -155,10 +155,10 @@ function pageThreeSwitch() {
         <div class="guess-card" id="card${deck.cards[9].cardNumber}">${deck.cards[9].cardNumber}</div>
       </section>
       <section id="player-two-section" class="player-section">
-        <h4>${deck.playerTwo.name}</h4>
+        <h4 id="player-two-area">${deck.playerTwo.name}</h4>
         <div class="player-section-line"></div>
         <p>Matches This Round</p>
-        <h1 class="number-of-matches" id="player-two-matches">?</h1>
+        <h1 class="number-of-matches" id="player-two-matches">${deck.playerTwo.matchCount}</h1>
         <div class="player-section-line"></div>
         <ul class="game-wins">
           Game Wins
@@ -167,19 +167,20 @@ function pageThreeSwitch() {
 }
 
 function pageCongratsSwitch() {
-  if (deck.matches === 5) {
+  if (deck.currentGameMatches === 5) {
     var finishTime = new Date();
     var seconds = finishTime - deck.startTime;
     seconds = Math.floor(seconds/1000);
     var minutes = Math.floor(seconds/60);
     seconds = seconds % 60;
     var time = `${minutes} minutes and ${seconds} seconds`;
+    deck.findWinner();
     makeLeaderBoard(seconds);
     main.innerHTML = '';
     main.classList.remove('third-page');
     main.innerHTML += `
       <form class="second-page-form">
-        <h2>CONGRATULATIONS ${playerOneInput.value}</h2>
+        <h2>CONGRATULATIONS ${deck.winner.name}</h2>
         <p class="congrats-gif">It took you ${time} to complete the thing!</p>
         <p class="congrats-gif"><iframe src="https://giphy.com/embed/XreQmk7ETCak0" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
         <button type="button" name="button" class="play-game-button" id="restart-game-button">New Game</button>
@@ -199,13 +200,12 @@ function changeGuessCard() {
   number = (number.charAt(4) + number.charAt(5));
   if (deck.flippedOver <= 1 && deck.cards[number-1].isFlipped === false) {
     flipCardToPicture(number);
-  } else if (deck.cards[number-1].isFlipped) {
-    flipCardToNumber(number);
   }
   if (deck.selectedCards.length === 2) {
     setTimeout(checkTheCards, 800);
-    setTimeout(flipTheCardsBack, 1500);
     setTimeout(pageCongratsSwitch, 800);
+    setTimeout(flipTheCardsBack, 1500);
+    setTimeout(switchTheTurns, 1500);
   }
 }
 
@@ -219,15 +219,6 @@ function flipCardToPicture(number) {
   deck.flippedOver += 1;
 }
 
-function flipCardToNumber(number) {
-  event.target.classList.remove('flip-horizontal-bottom');
-  event.target.innerHTML = `${deck.cards[number-1].cardNumber}`;
-  event.target.style.background = 'none';
-  event.target.classList.add('flip-vertical-bck');
-  deck.cards[number-1].flip();
-  deck.flippedOver -= 1;
-}
-
 function checkTheCards() {
   deck.checkSelectedCards();
 }
@@ -236,13 +227,19 @@ function flipTheCardsBack() {
   deck.flipCardsBack();
 }
 
+function switchTheTurns() {
+  if (deck.currentGameMatches < 5) {
+    deck.switchPlayerTurn();
+  }
+}
+
 function makeLeaderBoard(time) {
   var blankBoard = [];
   if (JSON.parse(localStorage.getItem("leaderBoard") !== null)) {
     var oldBoard = JSON.parse(localStorage.getItem("leaderBoard"));
     blankBoard = blankBoard.concat(oldBoard);
   }
-  var newLeader = {name: deck.playerOne.name, time: time};
+  var newLeader = {name: deck.winner.name, time: time};
   blankBoard.push(newLeader);
   blankBoard = blankBoard.sort(compareTime);
   if (blankBoard.length > 5) {

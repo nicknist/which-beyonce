@@ -3,12 +3,14 @@ class Deck {
     this.cards = [];
     this.matchedCards = [];
     this.selectedCards = [];
+    this.currentGameMatches = 0;
     this.startTime = new Date();
-    this.matches = 0;
     this.flippedOver = 0;
     this.playerOne = playerOne;
     this.playerTwo = playerTwo;
     this.possiblePictures = []
+    this.currentTurn = playerOne;
+    this.winner = null;
   }
 
   shuffle() {
@@ -30,8 +32,7 @@ class Deck {
   }
 
   moveToMatched() {
-    this.matches += 1;
-    document.getElementById('player-one-matches').innerHTML = this.matches;
+    this.chooseCurrentMatchCount();
     this.selectedCards[0].match();
     this.selectedCards[1].match();
     document.getElementById(`card${this.selectedCards[0].cardNumber}`).remove();
@@ -39,6 +40,18 @@ class Deck {
     this.matchedCards = this.selectedCards;
     this.selectedCards = [];
     this.flippedOver = 0;
+  }
+
+  chooseCurrentMatchCount() {
+    if (this.currentTurn === this.playerOne) {
+      this.playerOne.matchCount += 1;
+      this.currentGameMatches += 1;
+      document.getElementById('player-one-matches').innerHTML = this.playerOne.matchCount;
+    } else {
+      this.playerTwo.matchCount += 1;
+      this.currentGameMatches += 1;
+      document.getElementById('player-two-matches').innerHTML = this.playerTwo.matchCount;
+    }
   }
 
   flipCardsBack() {
@@ -57,5 +70,33 @@ class Deck {
     card.style.background = 'none';
     card.classList.add('flip-vertical-bck');
     this.selectedCards[number].flip();
+  }
+
+  switchPlayerTurn() {
+    var p1area = document.getElementById('player-one-area')
+    var p2area = document.getElementById('player-two-area');
+    if (this.currentTurn === this.playerTwo) {
+      this.currentTurn = this.playerOne;
+      p2area.innerHTML = this.playerTwo.name;
+      p2area.classList.remove('green-background');
+      p1area.classList.add('green-background');
+      p1area.insertAdjacentHTML('beforeend', `
+      <p>IT'S YOUR TURN!</p>`);
+    } else {
+      this.currentTurn = this.playerTwo;
+      p1area.innerHTML = this.playerOne.name;
+      p1area.classList.remove('green-background');
+      p2area.classList.add('green-background');
+      p2area.insertAdjacentHTML('beforeend', `
+      <p>IT'S YOUR TURN!</p>`);
+    }
+  }
+
+  findWinner() {
+    if (this.playerTwo.matchCount > this.playerOne.matchCount) {
+      this.winner = this.playerTwo;
+    } else {
+      this.winner = this.playerOne;
+    }
   }
 }
